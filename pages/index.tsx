@@ -1,7 +1,43 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+type Message = {
+  id: string;
+  content: string;
+  created_at: string;
+};
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_KEY!
+);
 
 const Home: NextPage = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const getInitialMessages = async () => {
+      const { data } = await supabase
+        .from<Message>('messages')
+        .select()
+        .order('created_at', { ascending: false });
+    };
+    getInitialMessages();
+
+    const subscription = supabase
+      .from<Message>(`messages`)
+      .on('INSERT', (payload) => {
+        setMessages((current) => [payload.new, ...current]);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeSubscription(subscription);
+    };
+  }, []);
+
   return (
     <div>
       <Head>
@@ -10,7 +46,13 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main></main>
+      <main>
+        <ul>
+          {messages.map((message) => (
+            <li key={message.id}>{message.content}</li>
+          ))}
+        </ul>
+      </main>
     </div>
   );
 };
