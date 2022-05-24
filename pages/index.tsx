@@ -68,19 +68,21 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="p-4 flex flex-col min-h-screen">
-        <ul className="flex flex-col items-start justify-start flex-grow">
-          {messages.map((message) => (
-            <li className="pb-2 flex" key={message.id}>
-              <div className="bg-green-500 px-2 py-1 rounded">
-                {message.content}
-              </div>
-              <span className="ml-2 text-zinc-500 text-sm">
-                {message.created_at}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <main className="p-4 flex flex-col h-screen">
+        <div className="flex-grow overflow-y-scroll">
+          <ul className="flex flex-col items-start justify-start">
+            {messages.map((message) => (
+              <li className="pb-2 flex" key={message.id}>
+                <div className="bg-green-500 px-2 py-1 rounded">
+                  {message.content}
+                </div>
+                <span className="ml-2 text-zinc-500 text-sm">
+                  {message.created_at}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
         <form onSubmit={handleSubmit}>
           <input
             className="p-2 rounded w-full"
